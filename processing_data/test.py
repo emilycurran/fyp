@@ -65,11 +65,13 @@ def main():
     records_dict = {} #store the rec_no and segmented_rec number pairs
     for path in paths: 
         rec_no = os.path.basename(path)[:3] #record number
+        print(rec_no)
 
         segmented_record = segment_record(path) #segmented record associated to each record
 
         records_dict[rec_no] = segmented_record
 
+    cwd = Path.cwd()
     #now plot and save each time series to the appropiate place
     for rec_no, segmented_record in records_dict.items():
         index_arr_type = 0 #reference to the fibrilation type in arrythmia labels
@@ -79,14 +81,23 @@ def main():
             count = 1 #number of times a type of fibrilation appears in the record
             
             for time_series in arr_type:
-                save_plot(time_series, count, rec_no, type_label)
+                save_plot(time_series, count, rec_no, type_label, cwd)
                 count = count + 1
 
             index_arr_type += 1
 
-def save_plot(time_series, count, rec_no, arr_type):
-    print(time_series)
+def save_plot(time_series, count, rec_no, arr_type, cwd):
+    image_folder = cwd / "image_data" / arr_type
+
+    filename = image_folder / f"{rec_no}_{count}.png"
+
+    plt.figure()
     plt.plot(time_series)
+
+    plt.savefig(filename)
+    plt.close()
+
+    print(f"Plot saved: {filename}")
       
     
 def create_folders():
